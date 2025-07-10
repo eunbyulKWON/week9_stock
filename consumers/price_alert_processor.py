@@ -24,9 +24,9 @@ def process_message(message):
             return
         
         # 가격 변동률 계산 
-        previous_prices = previous_prices[ticker]
-        if previous_prices > 0:
-            change_pct = (current_price - previous_prices) / previous_prices * 100
+        prev_prices = previous_prices[ticker]
+        if prev_prices > 0:
+            change_pct = (current_price - prev_prices) / prev_prices * 100
         else:
             change_pct = 0.0 
 
@@ -36,10 +36,15 @@ def process_message(message):
         else:
             print(f"가격 변동치가 적음 : {ticker}이 {change_pct}% 변동")
 
+        ## 다음 계산을 위해 현재 가격을 이전 가격으로 업데이트 
+        previous_prices[ticker] = current_price
+    
+    except KeyError as  e:
+        print(f"메시지에 필요한 키가 없습니다 : {e} - 메시지 내용 : {message}")
 
     except Exception as e:
         print(f"메시지 처리 중 오류 발생: {e}")
-        
+
 def run_consumer():
     try:
         consumer = KafkaConsumer(
@@ -53,11 +58,12 @@ def run_consumer():
 
         for message in consumer:
             print(f"메시지 수신 : {message.value}")
-        # return consumer
+            process_message(message.value)
 
     except Exception as e:
         print(f"Kafka Consumer 연결 실패 : {e}")
         return None
+    
 
 if __name__ == "__main__":
     run_consumer()

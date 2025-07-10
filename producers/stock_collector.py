@@ -44,6 +44,7 @@ def get_and_send_data(producer):
                 'volume' : float(latest['Volume'].iloc[0]),
                 'change_pct' : float((latest['Close'].iloc[0]) - data.iloc[-2]['Close'] / data.iloc[-2]['Close'] * 100) if len(data) > 1 else 0.0
             }
+            print(f"현재가 : {message['close']}, 이전가격 : {data.iloc[-2]['Close']}")
             print(f"종목 : {message['ticker']}, 현재가 : {message['close']}, 변동률 : {message['change_pct']}%")
         # Kafka 토픽에 메시지 전송 
         producer.send(TOPIC_NAME, message)

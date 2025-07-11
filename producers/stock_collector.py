@@ -1,17 +1,25 @@
+#!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+
 import yfinance as yf
 from datetime import datetime 
 from kafka import KafkaProducer
 import json
+import os
+import sys
 
+## 상위 디렉토리를 path에 추가하여 다른 모듈 import (config/config.py)
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config.config import KAFKA_SERVERS, TOPIC_NAME
 
 ## 설정값을 일단 직접 작성 
-KAFKA_SERVER = 'localhost:9092'
-TOPIC_NAME = 'stock-prices'
+# KAFKA_SERVER = 'localhost:9092'
+# TOPIC_NAME = 'stock-prices'
 
 def create_producer():
     try:
         producer = KafkaProducer(
-            bootstrap_servers=KAFKA_SERVER,
+            bootstrap_servers=KAFKA_SERVERS,
             value_serializer=lambda x: json.dumps(x).encode('utf-8')
         )
         # print(producer) 
